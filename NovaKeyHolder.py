@@ -5,7 +5,7 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 import pygame
-import requests
+import keyboard
 
 class KeyHolderApp(tk.Tk):
     def __init__(self):
@@ -14,9 +14,9 @@ class KeyHolderApp(tk.Tk):
         self.geometry('440x450')
         self.minsize(440, 450)
 
+        # Initialize Pygame and its video system
+        pygame.init()
         pygame.mixer.init()
-        self.controllers = []
-        self.detect_controllers()
 
         self.settingsFileLocation = "settings.json"
         self.presetsFileLocation = "key_presets.json"
@@ -53,10 +53,8 @@ class KeyHolderApp(tk.Tk):
         self.theme_button = tk.Button(self, text="Change Theme", command=self.change_theme)
         self.logs_button = tk.Button(self, text="Logs", command=self.show_logs)
 
-        self.credits_button = tk.Button(self, text="Credits", command=self.show_credits)
-
         self.versionLabel = tk.Label(self, text=f"Version: {self.version}")
-        self.update_button = tk.Button(self, text="Check for Updates", command=self.check_for_updates)
+        self.changelog_button = tk.Button(self, text="Changelog", command=self.show_changelog)
 
         self.place_gui_elements()
         self.apply_theme()
@@ -68,13 +66,6 @@ class KeyHolderApp(tk.Tk):
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s - %(levelname)s - %(message)s',
                             handlers=[RotatingFileHandler(self.log_filename, maxBytes=10000, backupCount=3)])
-
-    def detect_controllers(self):
-        pygame.joystick.init()
-        self.controllers = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
-        for controller in self.controllers:
-            controller.init()
-            logging.info(f"Detected controller: {controller.get_name()}")
 
     def load_audio_files(self):
         try:
@@ -105,11 +96,10 @@ class KeyHolderApp(tk.Tk):
         self.keysToHoldLabel.grid(row=3, column=1, padx=10, pady=10, sticky="ew")
         self.theme_button.grid(row=7, column=0, padx=10, pady=10, sticky="ew")
         self.logs_button.grid(row=8, column=0, padx=10, pady=10, sticky="ew")
-        self.credits_button.grid(row=9, column=0, padx=10, pady=10, sticky="ew")
-        self.versionLabel.grid(row=10, column=0, padx=10, pady=10, sticky="ew")
-        self.update_button.grid(row=10, column=1, padx=10, pady=10, sticky="ew")
+        self.versionLabel.grid(row=9, column=0, padx=10, pady=10, sticky="ew")
+        self.changelog_button.grid(row=9, column=1, padx=10, pady=10, sticky="ew")
 
-        for i in range(11):
+        for i in range(10):
             self.grid_rowconfigure(i, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -129,9 +119,8 @@ class KeyHolderApp(tk.Tk):
         self.keyStateLabel.configure(bg=theme["bg"], fg=theme["label"])
         self.keysToHoldLabel.configure(bg=theme["bg"], fg=theme["label"])
         self.logs_button.configure(bg=theme["button"], fg=theme["fg"])
-        self.credits_button.configure(bg=theme["button"], fg=theme["fg"])
         self.versionLabel.configure(bg=theme["bg"], fg=theme["label"])
-        self.update_button.configure(bg=theme["button"], fg=theme["fg"])
+        self.changelog_button.configure(bg=theme["button"], fg=theme["fg"])
 
     def switch_numKeys(self):
         self.numKeys.set(3 - self.numKeys.get())
@@ -337,32 +326,6 @@ class KeyHolderApp(tk.Tk):
         text_area.config(state=tk.DISABLED)
         messagebox.showinfo("Logs", "Logs have been cleared.")
 
-    def show_credits(self):
-        credits_window = tk.Toplevel(self)
-        credits_window.title("Credits")
-        credits_window.geometry("600x400")
-
-        credits_text = (
-            "Nova Key Holder\n\n"
-            "Developed by BaptistSec\n"
-            "Libraries Used:\n"
-            "- tkinter (Python Standard Library)\n"
-            "- pygame\n"
-            "- keyboard\n"
-            "- json\n"
-            "- os\n"
-            "- logging\n"
-            "- webbrowser\n"
-            "- RotatingFileHandler (logging.handlers)\n"
-            "\n"
-            "Special thanks to all the developers of these libraries and the Python community."
-        )
-
-        text_area = scrolledtext.ScrolledText(credits_window, wrap=tk.WORD, width=80, height=20)
-        text_area.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
-        text_area.insert(tk.END, credits_text)
-        text_area.config(state=tk.DISABLED)
-
     def show_changelog(self):
         if os.path.isfile(self.changelog_filename):
             with open(self.changelog_filename, "r") as file:
@@ -389,22 +352,6 @@ class KeyHolderApp(tk.Tk):
 
         acknowledge_button = tk.Button(changelog_window, text="Acknowledge", command=changelog_window.destroy)
         acknowledge_button.pack(pady=10)
-
-    def check_for_updates(self):
-        try:
-            response = requests.get("https://api.github.com/repos/BaptistSec/NovaKeyHolder/releases/latest")
-            latest_release = response.json()
-            latest_version = latest_release["tag_name"]
-
-            if self.version < latest_version:
-                update_message = f"A new version ({latest_version}) is available. Please visit the GitHub repository to download the latest version."
-                logging.info(update_message)
-                messagebox.showinfo("Update Available", update_message)
-            else:
-                messagebox.showinfo("No Updates", "You are using the latest version.")
-        except Exception as e:
-            logging.error("Error checking for updates: %s", e)
-            self.show_error("Error checking for updates. Please try again later.")
 
     def on_resize(self, event):
         for widget in self.winfo_children():

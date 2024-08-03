@@ -1,0 +1,13 @@
+{
+    "0.2": "\n- Added secure handling across the entire program to enhance user data protection.\n- Fixed bugs related to key holding on non-English keyboards.\n- Improved the performance of the key capture process.\n- Enhanced UI responsiveness.\n- Updated logging mechanism to include more detailed information.",
+    "0.19": "\n- Fixed bugs related to key holding on non-English keyboards.\n- Improved the performance of the key capture process.\n- Enhanced UI responsiveness.\n- Updated logging mechanism to include more detailed information.",
+    "0.18": "\n- Added feature to save and load multiple key holding presets.\n- Implemented custom themes and the ability to switch between them.\n- Added visual feedback for key holding status.",
+    "0.17": "\n- Introduced support for various foreign keyboard layouts.\n- Enhanced compatibility with different operating systems.\n- Fixed minor bugs related to audio playback.",
+    "0.16": "\n- Added the changelog feature to display version updates and changes.\n- Improved error handling and user feedback mechanisms.",
+    "0.15": "\n- Implemented audio feedback for key press and release events.\n- Added error sounds for failed actions.",
+    "0.14": "\n- Added support for game controllers.\n- Users can now map controller buttons to specific key holding actions.",
+    "0.13": "\n- Enhanced the key capture interface for better user experience.\n- Added more detailed feedback labels.",
+    "0.12": "\n- Improved stability of key holding functions.\n- Fixed issues with hotkey capture.",
+    "0.11": "\n- Initial release of the Nova Key Holder application.\n- Basic key holding and hotkey capture functionalities implemented.",
+	"Credits": "Nova Key Holder\n\nDeveloped by BaptistSec\nLibraries Used:\n- tkinter (Python Standard Library)\n- pygame\n- keyboard\n- json\n- os\n- logging\n- webbrowser\n- RotatingFileHandler (logging.handlers)\n\nSpecial thanks to all the developers of these libraries and the Python community."
+}
